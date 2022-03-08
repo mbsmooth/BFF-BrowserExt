@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "3pl Mods",
   "version": "0.1.0",
   "description": "My Chrome Extension",
@@ -19,16 +19,7 @@
       "js": ["wms.js"]
     }
   ],
-  "background": {
-    "scripts": [
-      "background.js"
-    ],
-    "persistent": false
-  },
   "options_ui": {
     "page": "options.html"
-  },
-  "chrome_url_overrides": {
-    "newtab": "index.html"
   }
 }
