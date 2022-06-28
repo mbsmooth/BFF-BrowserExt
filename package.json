@@ -1,7 +1,7 @@
 {
   "name": "3PL Mods",
-  "version": "0.1.0",
-  "description": "My Chrome Extension",
+  "version": "0.1.1",
+  "description": "The BFF Chrome Extension",
   "private": true,
   "scripts": {
     "watch": "webpack --mode=development --watch --config config/webpack.config.js",
