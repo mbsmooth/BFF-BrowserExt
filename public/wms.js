@@ -3,8 +3,8 @@
 
 var CONFIG= chrome.storage.local.get('config')
 
-// CONFIG.logServer = "https://tools.bful.co/log";
-CONFIG.logServer = "http://localhost:8080/log";
+CONFIG.logServer = "https://tools.bful.co/log";
+// CONFIG.logServer = "http://localhost:8080/log";
 CONFIG.logEnabled = true;
 
 
