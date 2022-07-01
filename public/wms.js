@@ -3,8 +3,9 @@
 
 var CONFIG= chrome.storage.local.get('config')
 
-CONFIG.logServer = "https://bff-tools-dev.azurewebsites.net/log";
-CONFIG.logEnabled = false;
+// CONFIG.logServer = "https://tools.bful.co/log";
+CONFIG.logServer = "http://localhost:8080/log";
+CONFIG.logEnabled = true;
 
 
 
@@ -29,14 +30,19 @@ setInterval(()=>{
     oldSearch = window.location.search;
     page = (new URL(document.location)).searchParams.get('page');
 
+    console.log(`3PL Mods: now on page: ${page}`)
+
     //check if we have a functions setup for this page
     if(typeof(pageMods.setup[camelize(page)]) == 'function'){
-        pageMods.setup[camelize(page)]()
+        console.log(`3PL Mods: Setup Mods for page ${page}`);
+        pageMods.setup[camelize(page)]();
+    } else {
+        console.log(`3PL Mods: no Mods for page ${page}`);
     }
 
     pageMods.settings.user = window.localStorage.currentLoginUser
 
-},500)
+},250)
 
 
 
@@ -82,6 +88,7 @@ pageMods = {
             
         },
         smallParcelPackAndShip: ()=>{
+            //disable the "Select all unpacked items" check box
             document.getElementById("selectUnpack").disabled=true
 
             pageMods.settings.smallParcelPackAndShip.active = true;
