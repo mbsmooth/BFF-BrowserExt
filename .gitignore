@@ -12,3 +12,5 @@
 test*
 
 npm-debug.log*
+BFF-BrowserExt.crx
+build.crx
