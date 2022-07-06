@@ -1,6 +1,5 @@
 # Introduction 
-V 22.06.00
-Browser extention, focused on Googcle Chrome and Chromium, to add specific functionality to websites, mostly 3PL Central. 
+Browser extention, focused on Google Chrome and Chromium, to add specific functionality to websites, mostly 3PL Central. 
 
 This Functionallity is to imporve or add features that 3PL Central has not added or created but that Brillinat fulillment requires.
 

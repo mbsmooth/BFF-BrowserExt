@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "3pl Mods",
-  "version": "0.1.13",
+  "version": "0.1.16",
   "update_url": "https://wms.bful.co/ext/",
   "description": "The BFF Chrome Extension",
   "icons": {
