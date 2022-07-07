@@ -1,8 +1,18 @@
-// require('./config.js');
+// (async () => {
+//     const src = chrome.runtime.getURL("demoModule.js");
+//     const demo = await import(src);
+//     demo.hello()
+//   })();
 
-
-// Disable 3PL Centrals error reporting
+// // Disable 3PL Centrals error reporting
+// var onerror_disable_script = document.createElement('script');
+// onerror_disable_script.type  ="text/javascript"
+// onerror_disable_script.src  ="noErrorDisable.js"
+// // onerror_disable_script.script-src ='unsafe-eval'
+// // onerror_disable_script.text ="window.onerror = function (message, source, lineno, colno, error) {}"
+// document.body.appendChild(onerror_disable_script)
 window.onerror = function (message, source, lineno, colno, error) {}
+
 
 
 // build $3pl object
@@ -20,8 +30,10 @@ var $3pl = {
         setup: {},
         settings: {},
         destroy: {},
+        watchers:{}
     },
-    events: [], // local container to hold log entries
+    events:{},
+    logEntries: [], // local container to hold log entries
     log: function(entry = {}) {
         !('data' in entry) && (entry.data = {}) // create the data key if it does not exist
         
@@ -34,9 +46,8 @@ var $3pl = {
             sysID: $3pl.config.sysID
         }
         
-
         //save this Log Entry to the local container
-        $3pl.events.push(entry)
+        $3pl.logEntries.push(entry)
     
         // if enabled, upload to the server
         if($3pl.config.logEnabled){
@@ -58,10 +69,10 @@ var $3pl = {
                 console.log("Event uploaded");
                 console.log(doc);
                 
-                $3pl.events.find((o,i)=>{
+                $3pl.logEntries.find((o,i)=>{
                     if(o.localId === doc.localId){
-                        $3pl.events[i]._id = doc._id
-                        $3pl.events[i].uploaded = true
+                        $3pl.logEntries[i]._id = doc._id
+                        $3pl.logEntries[i].uploaded = true
                         return true; // stop search
                     }
                 })
@@ -74,12 +85,7 @@ var $3pl = {
                     entry.uploaded = false
                     console.error("3PL Mods: Could not upload event log to the server")
                 }
-
-
             })
-            
-
-
         } else {
             console.notice("3PL Mods: Event log upload is Disabled.")
         }
@@ -87,6 +93,12 @@ var $3pl = {
 
     }
 }
+
+
+
+
+
+
 
 
 /**
@@ -138,9 +150,6 @@ $3pl.setup = async function (){
 
 
 $3pl.setup()
-
-
-
 
 
 
@@ -222,34 +231,23 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
     //disable the "Select all unpacked items" check box
     document.getElementById("selectUnpack").disabled=true;
 
-
     // track the status of the "Pack and Ship" Modal
     $3pl.pageMods.settings.smallParcelPackAndShip.active = true;
 
-    // var transNum
-    // var t=0; // start the clock at zero
-    // var tmax=10000; // Max time to wait (ms)
-    // var twait=100; // time to wait between checks (ms)
 
-    // while(!transNum && t<tmax){
-    //     transNum = parseInt(document.querySelector("[data-wms-selector='packAndShipTransactionTransactionIdValue']")?.innerHTML);
-    //     console.log("tick")
-    //     await wait(twait)
-    //     t+=twait
-    // }
-    // console.log(t)
+  
 
-
+    // get the Transaction number once all the fields populate
     querySelectorValAsync("[data-wms-selector='packAndShipTransactionTransactionIdValue']")
-    .then((el)=>{
+    .then(async (el)=>{
         var transNum = parseInt(el)
+        var customerName = await querySelectorValAsync("[data-wms-selector='packAndShipTransactionCustomerValue']")
 
         if(!transNum){
             $3pl.log({ 
                 code: 31002,
                 level: 4,
                 message: "Loaded the 'smallParcelPackAndShip' Page; Transaction Number not found",
-                // transaction: transNum,
                 func: "$3pl.pageMods.setup.smallParcelPackAndShip()"
 
             })
@@ -258,6 +256,7 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
                 code: 31001,
                 level: 2,
                 transaction: transNum, 
+                customerName: customerName,
                 message: "Loading the 'smallParcelPackAndShip' Page",
                 data: {
                     transaction: transNum
@@ -279,9 +278,35 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
     })
 
 
+    var scanBox = document.getElementById('packAndShipTransactionscanGridKey')
 
+    /*
+    *   Capture & Log typed value into the ScanBox
+    *   
+    */
+    scanBox.addEventListener("blur", (e)=>{
+        // get the Transaction number once all the fields populate
+        querySelectorValAsync("[data-wms-selector='packAndShipTransactionTransactionIdValue']")
+        .then(async (el)=>{
+            var transNum = parseInt(el)
+            var customerName = await querySelectorValAsync("[data-wms-selector='packAndShipTransactionCustomerValue']")
 
-
+            $3pl.log({ 
+                code: 31004,
+                level: 3,
+                customerName: customerName,
+                transaction: transNum, 
+                message: "Some text was typed into the SKU Box",
+                data: {
+                    value: scanBox.value 
+                }, 
+                func: "$3pl.pageMods.setup.smallParcelPackAndShip()"
+            })
+        })
+        .catch(()=>{
+            console.error("transNum not found after blur")
+        })
+    })
 
     /*
     *   Barcode Scan Required
@@ -289,8 +314,7 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
     */
     
     var scanBox = document.getElementById('packAndShipTransactionscanGridKey')
-    if(false ){ // Disabled
-    // if($3pl.config.keyedInputDisabled ){ // check in setting if keyed entry is allowed
+   if($3pl.config.keyedInputDisabled){ // check in setting if keyed entry is allowed
         scanBox.oninput = (e)=>{ // Listener for input changes
             $3pl.pageMods.settings.smallParcelSettings.scanBoxTimeout = setTimeout(()=>{ // build a timmer to clear the input box
                 //TODO: Log the data back to the server
@@ -298,17 +322,6 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
                 
                 console.log('3PL Mods: Input Locked!')
                 scanBox.disabled = true; // Lock the Text Input box
-
-                $3pl.log({ 
-                    code: 31004,
-                    level: 3,
-                    transaction: transNum, 
-                    message: "Some test was typed into the SKU Box",
-                    data: {
-                        value: scanBox.value 
-                    }, 
-                    func: "$3pl.pageMods.setup.smallParcelPackAndShip()"
-                })
 
                     setTimeout(()=>{
                     scanBox.disabled = false; // re-enable
@@ -329,25 +342,32 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
             console.log('3PL Mods: Seems we have an error!')
 
             document.querySelector('#Window1ScanKeyNotAvailableModel').classList.add('tagged')
-            var error = document?.querySelector('#Window1ScanKeyNotAvailableModel')?.querySelector(".model-content-wrapper")?.innerHTML;
-            console.log(`3PL Mods: ${error}`)
+            var error = document?.querySelector('#Window1ScanKeyNotAvailableModel')?.querySelector(".model-content-wrapper")?.innerHTML || "Error Not avalible.";
 
-            $3pl.log({ 
-                code: 31021,
-                level: 4,
-                transaction: transNum, 
-                message: `Scan Error: error`,
-                data: {
-                    value: scanBox.value 
-                }, 
-                func: "$3pl.pageMods.setup.smallParcelPackAndShip()"
-            })
+            querySelectorValAsync("[data-wms-selector='packAndShipTransactionTransactionIdValue']")
+                .then(async (el)=>{
+                    var transNum = parseInt(el)
+                    var customerName = await querySelectorValAsync("[data-wms-selector='packAndShipTransactionCustomerValue']")
+                    
+
+                    $3pl.log({ 
+                        code: 31021,
+                        level: 4,
+                        transaction: transNum, 
+                        customerName: customerName,
+                        message: `Scan Error: ${error}`,
+                        data: {
+                            value: scanBox.value,
+                            error: error
+                        }, 
+                        func: "$3pl.pageMods.setup.smallParcelPackAndShip()"
+                    })
+                })
+
+            
 
         }
     },250)
-
-
-
 
     // seft distruct for when the model is closed
     $3pl.pageMods.settings.smallParcelSettings.selfDistruct = setInterval(()=>{
@@ -368,7 +388,7 @@ $3pl.pageMods.settings.smallParcelPackAndShip= {},
 
 
 // Teardown / detroy the pageMods
-$3pl.pageMods.destroy.smallParcelSettings=  ()=>{},
+$3pl.pageMods.destroy.smallParcelSettings= ()=>{},
 $3pl.pageMods.destroy.smallParcel= ()=>{
     clearInterval($3pl.pageMods.settings.smallParcel.packAndShipWatcher)
 }
@@ -377,8 +397,48 @@ $3pl.pageMods.destroy.smallParcelPackAndShip= ()=>{
     clearInterval($3pl.pageMods.settings.smallParcelSettings.selfDistruct)
     $3pl.pageMods.settings.smallParcelPackAndShip.active = false;
     $3pl.pageMods.settings.smallParcelPackAndShip = {} // Clear any settings
-    
 }
+
+
+
+
+// $(".wms-model-new-ui-wrapper").length
+
+
+
+
+// $3pl.events.modal = new CustomEvent('open', { detail: elem.dataset.time });
+
+
+/**
+ * [watcherBySelector build a watcher that will watch for a selector to exist, and then call the callback]
+ * 
+ * Example: watcherBySelector(".wms-model-new-ui-wrapper",(el)=>{})
+ *
+ * @var {[type]}
+ */
+function watcherBySelector(selector,callback){
+    // var el // the resulting element
+    // var t=0; // start the clock at zero
+    // tmax??=10000; // Max time to wait (ms)
+    var twait=100; // time to wait between checks (ms)
+    document.watcher??={}
+    document.watcher.activeEls ??= []
+
+    setInterval(()=>{
+        var elmts = document.querySelectorAll(selector)
+        if(elmts.length){
+            elmts.forEach(el => {
+                // check if this element is already active
+                if(!el.dataset.found){
+                    el.dataset.found = true
+                    callback(el)
+                }
+            });
+        }
+    },twait)
+}
+
 
 
 function querySelectorValAsync(selector,tmax){
@@ -427,29 +487,6 @@ function makeid(length) {
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
 
-
-
-// Object.defineProperty(window,'sysID2',{
-//     get: async ()=>{
-//         return await chrome.storage.local.get('sysID') //attempt to get sysID
-//             .then(async (res)=>{
-//                 if(!res.sysID){ // if it was not found
-//                     return await chrome.storage.local.set({sysID: makeid(16)}) //create and save a new sysID
-//                     .then(async ()=>{
-//                         return await chrome.storage.local.get('sysID') //read it again and return the value
-//                         .then((res)=>{
-//                             // console.log(`3PL Mods sysID: ${res.sysID} `)
-//                             return res.sysID
-//                         })
-
-//                     })
-//                 } else {   // sysID was found the first time around
-//                     // console.log(`3PL Mods sysID: ${res.sysID} `)
-//                     return res.sysID
-//                 }
-//             })
-//     }
-// })
 
 
 
