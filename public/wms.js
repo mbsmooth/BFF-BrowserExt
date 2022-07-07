@@ -289,7 +289,8 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
     */
     
     var scanBox = document.getElementById('packAndShipTransactionscanGridKey')
-    if($3pl.config.keyedInputDisabled){ // check in setting if keyed entry is allowed
+    if(false ){ // Disabled
+    // if($3pl.config.keyedInputDisabled ){ // check in setting if keyed entry is allowed
         scanBox.oninput = (e)=>{ // Listener for input changes
             $3pl.pageMods.settings.smallParcelSettings.scanBoxTimeout = setTimeout(()=>{ // build a timmer to clear the input box
                 //TODO: Log the data back to the server
