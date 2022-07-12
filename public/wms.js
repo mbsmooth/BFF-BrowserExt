@@ -40,10 +40,12 @@ var $3pl = {
         entry.localId = makeid(16)
         entry.createdAt= new Date()
         entry.user = window.user
+        entry.sysID = $3pl.config.sysID
         entry.data.browserInfo ={
             user: window.user,
             page: window.page,
-            sysID: $3pl.config.sysID
+            sysID: $3pl.config.sysID,
+            extVer: chrome.runtime.getManifest().version
         }
         
         //save this Log Entry to the local container
