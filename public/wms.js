@@ -69,28 +69,31 @@ var $3pl = {
             )
             .then((response) => response.json())
             .then((doc)=>{
-                console.log("Event uploaded");
-                console.log(doc);
+                console.log("Event Log uploaded");
+                // console.log(doc);
                 
+
+                //update Local copy to be marked as uploaded
                 $3pl.logEntries.find((o,i)=>{
                     if(o.localId === doc.localId){
                         $3pl.logEntries[i]._id = doc._id
                         $3pl.logEntries[i].uploaded = true
+                        $3pl.logEntries[i].rtnDoc = doc
                         return true; // stop search
                     }
                 })
 
 
-                if(doc._id){
-                    entry._id = doc._id
-                    entry.uploaded = true
-                } else {
-                    entry.uploaded = false
-                    console.error("3PL Mods: Could not upload event log to the server")
-                }
+                // if(doc._id){
+                //     entry._id = doc._id
+                //     entry.uploaded = true
+                // } else {
+                //     entry.uploaded = false
+                //     console.error("3PL Mods: Could not upload event log to the server")
+                // }
             })
         } else {
-            console.notice("3PL Mods: Event log upload is Disabled.")
+            console.notice("3PL Mods: Event log upload is Disabled in Ext Settings.")
         }
 
 
@@ -115,15 +118,30 @@ $3pl.setup = async function (){
     console.log("3PL MODS IS LOADING")
 
 
-    // get the currentt save settings and save to running config
+    // get the current saved config and save to running config
     await chrome.storage.local.get().then((options)=>{
         $3pl.config = options
     })
 
     //check for needed upgrades
     if(!$3pl.config.version == chrome.runtime.getManifest().version){
-        //upgrade condig settings..
-        console.log("3PL Mods: The extention")
+        console.log("3PL Mods: The extention has been upgraded")
+        setTimeout(()=>{ // Delayed log entry about the upgrade
+            $3pl.log({  // Log Entry about the upgraded Ext
+                code: 39009,
+                level: 2,
+                transaction: null, 
+                message: "The Extention has been upgraded",
+                data: {
+                    prioVer: $3pl.config.version,
+                    updateVer: chrome.runtime.getManifest().version
+                }, 
+                func: null
+            })
+        },2000)  // 2 sec Delay 
+        //TODO: upgrade config settings..
+
+
         $3pl.config.version = chrome.runtime.getManifest().version
     }
 
