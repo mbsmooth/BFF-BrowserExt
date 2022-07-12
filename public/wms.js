@@ -47,6 +47,7 @@ var $3pl = {
             sysID: $3pl.config.sysID,
             extVer: chrome.runtime.getManifest().version
         }
+        entry.data.extConfig = $3pl.config
         
         //save this Log Entry to the local container
         $3pl.logEntries.push(entry)
