@@ -193,8 +193,8 @@ setInterval(()=>{
         console.log(`3PL Mods: no Mods for page ${page}`);
     }
 
-    $3pl.pageMods.settings.user = window.localStorage.currentLoginUser
-    $3pl.pageMods.settings.userName = window.localStorage.currentLoginUserName
+    // $3pl.user = window.localStorage.currentLoginUser
+    // $3pl.userName = window.localStorage.currentLoginUserName
 
 },250)
 
@@ -256,8 +256,6 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
     $3pl.pageMods.settings.smallParcelPackAndShip.active = true;
 
 
-  
-
     // get the Transaction number once all the fields populate
     querySelectorValAsync("[data-wms-selector='packAndShipTransactionTransactionIdValue']")
     .then(async (el)=>{
@@ -268,9 +266,8 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
             $3pl.log({ 
                 code: 31002,
                 level: 4,
-                message: "Loaded the 'smallParcelPackAndShip' Page; Transaction Number not found",
+                message: "Loaded the 'smallParcelPackAndShip' Page; Transaction Number not detected",
                 func: "$3pl.pageMods.setup.smallParcelPackAndShip()"
-
             })
         } else {
             $3pl.log({ 
@@ -306,6 +303,18 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
     *   
     */
     scanBox.addEventListener("blur", (e)=>{
+
+        if(!e.value){
+            // Scan box cleared
+            console.log('Scan box cleared')
+            return false;
+        }
+
+        document.querySelector("[packAndShipTransactionScanKeyAddButton]")
+        document.querySelector('[data-wms-selector="packAndShipTransactionScanKeyAddButton"]').onSubmit(()=>{console.log("hi")})
+
+
+
         // get the Transaction number once all the fields populate
         querySelectorValAsync("[data-wms-selector='packAndShipTransactionTransactionIdValue']")
         .then(async (el)=>{
@@ -321,11 +330,20 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
                 data: {
                     value: scanBox.value 
                 }, 
-                func: "$3pl.pageMods.setup.smallParcelPackAndShip()"
+                func: '$3pl.pageMods.setup.smallParcelPackAndShip()->scanBox.addEventListener("blur")'
             })
         })
         .catch(()=>{
             console.error("transNum not found after blur")
+            $3pl.log({ 
+                code: 00000,
+                level: 5,
+                customerName: null,
+                transaction: null, 
+                message: "transNum not found after blur",
+                data: {}, 
+                func: '$3pl.pageMods.setup.smallParcelPackAndShip()->scanBox.addEventListener("blur")'
+            })
         })
     })
 
@@ -333,7 +351,6 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
     *   Barcode Scan Required
     *   prevent manual input into the "Pack a Line Item" input filed
     */
-    
     var scanBox = document.getElementById('packAndShipTransactionscanGridKey')
    if($3pl.config.keyedInputDisabled){ // check in setting if keyed entry is allowed
         scanBox.oninput = (e)=>{ // Listener for input changes
@@ -345,10 +362,10 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
                 scanBox.disabled = true; // Lock the Text Input box
 
                     setTimeout(()=>{
-                    scanBox.disabled = false; // re-enable
-                    e.target.value = ''; //clear the input box
-                    setTimeout(scanBox.focus(),50) //delay reqd to wait for the filedto be enabled again
-                    // scanBox.focus()
+                        scanBox.disabled = false; // re-enable
+                        e.target.value = ''; //clear the input box
+                        setTimeout(scanBox.focus(),50) //delay reqd to wait for the filedto be enabled again
+                        // scanBox.focus()
                     },$3pl.config.keyedInputProccessTime) // Time until it is cleared and reset
             }, $3pl.config.keyedInputTimeLimit) //Time limit for input
         }
