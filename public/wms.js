@@ -38,7 +38,7 @@ var $3pl = {
         !('data' in entry) && (entry.data = {}) // create the data key if it does not exist
         
         entry.localId = makeid(16)
-        entry.createdAt= new Date()
+        // entry.createdAt= new Date()
         entry.user = window.user
         entry.sysID = $3pl.config.sysID
         entry.data.browserInfo ={
