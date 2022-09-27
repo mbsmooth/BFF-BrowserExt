@@ -263,6 +263,7 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
         var customerName = await querySelectorValAsync("[data-wms-selector='packAndShipTransactionCustomerValue']")
 
         if(!transNum){
+            console.log(`Trans Number not found`)
             $3pl.log({ 
                 code: 31002,
                 level: 4,
@@ -270,6 +271,8 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
                 func: "$3pl.pageMods.setup.smallParcelPackAndShip()"
             })
         } else {
+            console.log(`${transNum} opened.`)
+
             $3pl.log({ 
                 code: 31001,
                 level: 2,
@@ -281,6 +284,58 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
                 }, 
                 func: "$3pl.pageMods.setup.smallParcelPackAndShip()"
             })
+
+            // ** Draw an onscreen barcode for scanning. **
+            setTimeout(()=>{ // add container to hold the barcode
+
+                //find the container that will hold the barcode SVG element
+                var hAry = document.getElementsByClassName("footer-btn-holder")
+                // hAry may return more than one element.... get the last element
+                let divDOM = hAry[hAry.length-1]
+
+                //build the svg element
+                            // Note as to why it is this way
+                            // https://github.com/lindell/JsBarcode/issues/221
+                            // https://jsfiddle.net/hb9nr62q/1/
+                let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute('jsbarcode-format', 'code39')
+                svg.setAttribute('jsbarcode-value', transNum)
+                svg.className.baseVal = "transBarcode";
+                divDOM.prepend(svg);
+
+                JsBarcode(".barcode").init();
+
+                
+
+
+                // build the barcode and place into the svg element.
+                JsBarcode("svg.transBarcode", transNum,{
+                    // fontSize: 40,
+                    // background: "#4b8b7f",
+                    // lineColor: "#ffffff",
+                    // margin: 40,
+                    // marginLeft: 80,
+                    format: "code39",
+                    displayValue: true,
+                    height: 50,
+                    // width: 6
+                })
+
+                // Pack button listener
+                let packBtn = document.getElementById("packAndShipTransactionPack")
+                packBtn.addEventListener("click",(e)=>{
+                    let t = e.target
+                    if(t.disabled){
+                        console.log('Pack Button is disabled')
+                    } else {
+                        console.log('Pack Button is enabled')
+                        // tell the backgorund script to display techSHip window
+                        chrome.runtime.sendMessage({type:'techShip',transNum:transNum})
+                        
+                    }
+                })
+            },500)
+
         }
     })
     .catch((e)=>{

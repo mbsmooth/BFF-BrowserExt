@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "3pl Mods",
-  "version": "0.1.19",
+  "version": "0.1.25",
   "update_url": "https://wms.bful.co/ext/update.xml",
   "description": "The BFF Chrome Extension",
   "icons": {
@@ -10,31 +10,29 @@
     "48": "icons/icon_48.png",
     "128": "icons/icon_128.png"
   },
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
       "matches": ["*://global.secure-wms.com/*"],
-      "js": ["borderify.js"]
+      "js": ["wms.js"]
     },
     {
       "matches": ["*://global.secure-wms.com/*"],
-      "js": ["wms.js"]
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": [ "demoModule.js","noErrorDisable.js"],
-      "matches": ["*://global.secure-wms.com/*"]
+      "js": ["JsBarcode.js"]
     }
   ],
   "options_ui": {
     "page": "options.html"
   },
   "action": {
-    "default_title": "Drink Water Event",
-    "default_popup": "options.html"
+    "default_popup": "options.html",
+    "techShip": "techShip.html"
   },
   "permissions": [
     "storage",
-    "gcm"
+    "gcm",
+    "tabs"
   ]
 }
