@@ -18,6 +18,8 @@
 // });
 
 
+var $bf = {}
+
 chrome.runtime.onMessage.addListener(async (message,sender,sendResponse) => {
   console.log(`New Message`);  
   console.log(`Message from ${sender}`);  
@@ -38,3 +40,9 @@ chrome.runtime.onMessage.addListener(async (message,sender,sendResponse) => {
 
 
 console.log(`Starting 3PL Mods`);
+
+function getSettings(){
+
+}
+
+

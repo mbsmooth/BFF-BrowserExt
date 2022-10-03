@@ -23,6 +23,9 @@ const common = {
     errors: true,
     builtAt: true,
   },
+  optimization: {
+    minimize: false
+  },
   module: {
     rules: [
       // Help webpack in understanding CSS files imported in .js files

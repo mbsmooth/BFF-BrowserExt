@@ -103,10 +103,6 @@ var $3pl = {
 
 
 
-
-
-
-
 /**
  * 3PL Mods WMS Setup Funtion
  *  - This function will run when a matching page is loaded
