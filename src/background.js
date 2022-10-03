@@ -17,7 +17,7 @@
 //   }
 // });
 
-
+var $bf = {}
 
 // on load
 // get the current saved config and save to running config
@@ -60,3 +60,9 @@ chrome.runtime.onMessage.addListener(async (message,sender,sendResponse) => {
 
 
 console.log(`Starting 3PL Mods`);
+
+function getSettings(){
+
+}
+
+
