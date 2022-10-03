@@ -18,6 +18,27 @@
 // });
 
 
+
+// on load
+// get the current saved config and save to running config
+async ()=>{
+  await chrome.storage.local.get().then((options)=>{
+    $3pl.config = options
+  })
+}
+
+
+chrome.runtime.onMessage.addListener(async (message,sender,sendResponse) => {
+  if(!message.type === "getSettings") return false
+})
+chrome.runtime.onMessage.addListener(async (message,sender,sendResponse) => {
+  if(!message.type === "saveSettings") return false
+})
+
+
+
+
+// Console log all messages
 chrome.runtime.onMessage.addListener(async (message,sender,sendResponse) => {
   console.log(`New Message`);  
   console.log(`Message from ${sender}`);  
@@ -28,6 +49,7 @@ chrome.runtime.onMessage.addListener(async (message,sender,sendResponse) => {
   sendResponse({data:"done1"})
   return {data:"done2"}
 })
+
 chrome.runtime.onMessage.addListener(async (message,sender,sendResponse) => {
   if(!message.type === "techShip") return false
   console.log(`techShip: ${message.transNum}`);  
