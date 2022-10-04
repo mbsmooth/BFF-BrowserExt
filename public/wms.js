@@ -25,6 +25,13 @@ var $3pl = {
         keyedInputTimeLimit: 300,
         keyedInputProccessTime: 1000,
         devMachine: false,
+        techShipEnabled: false,
+        techShipTimeMin: 3000,
+        techShipAutoload: false, 
+        techShipAutoClose: false,
+        techShipTimeout: 3000,
+        
+
     },
     pageMods: { // container to hold page modification setup scripts, destroy settings and settings
         setup: {},
@@ -93,7 +100,7 @@ var $3pl = {
                 // }
             })
         } else {
-            console.notice("3PL Mods: Event log upload is Disabled in Ext Settings.")
+            console.log("3PL Mods: Event log upload is Disabled in Ext Settings.")
         }
 
 
@@ -117,6 +124,7 @@ $3pl.setup = async function (){
     // get the current saved config and save to running config
     await chrome.storage.local.get().then((options)=>{
         $3pl.config = options
+        $3pl.defaultConfig = Object.assign($3pl.defaultConfig,$3pl.config)
     })
 
     //check for needed upgrades
@@ -326,7 +334,7 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
                     } else {
                         console.log('Pack Button is enabled')
                         // tell the backgorund script to display techSHip window
-                        chrome.runtime.sendMessage({type:'techShip',transNum:transNum})
+                        chrome.runtime.sendMessage({type:'techShip',payload:{orderNum:transNum}})
                         
                     }
                 })
