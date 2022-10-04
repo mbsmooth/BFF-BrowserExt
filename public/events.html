@@ -1,4 +1,23 @@
 <!DOCTYPE html>
 <head>
-    
+    <meta charset="UTF-8">
 </head>
+<body>
+
+    <h2>Send Message to Background task</h2>
+    <label for="type">Type:</label><br>
+    <input name="type"  id="eventsFldType" type="text">
+    <br>
+    <br>
+    <label for="data">Payload: (json)</label><br>
+    <textarea name="payload"  id="eventsFldPayload" rows="5" cols="60">{"orderNum":123456}</textarea>
+    <br>
+    <br>
+    <button type="submit" id="eventsSubmitBtn">Go</button>
+
+    <script src="events.js"></script>
+</body>
+
+<h2>Examples</h2>
+<button class="exampleBtn" data-type="techShip">techShip</button>
+<button class="exampleBtn" data-type="logEntry">testLog</button>

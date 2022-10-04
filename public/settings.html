@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>Extention Settings <sup><a href="#" target="_blank">↗</a></sup></h1> 
+    <div id="settingsFormContainer">
+        <form id="SettingsForm">
+            <!-- <div class="formItem">
+                <div class="formItemTitle">Server Type:</div><br>
+                    <input type="radio" id="server_dev" name="server" value="dev">
+                    <label for="server_dev">Dev</label><br>
+                    <input type="radio" id="server_Prod" name="server" value="production">
+                    <label for="server_Prob">Production</label><br>
+                    <input type="radio" id="server_other" name="server" value="other">
+                    <label for="server_other">Other</label>
+            </div> -->
+
+            <fieldset >
+                <legend>Extention:</legend>
+                <div class="formItem">
+                    <label for="devMachine">Is Dev</label>
+                    <input type="checkbox" name="devMachine">
+                </div>
+
+                
+                <div class="formItem">
+                    <label for="logEnabled">Enable Logging</label>
+                    <input type="checkbox" name="logEnabled" checked>
+                </div>
+                
+                <div class="formItem">
+                    <label for="logServer">URL for Logging Server</label>
+                    <input type="text" name="logServer" value="https://tools.bful.co/log">
+                </div>
+
+                <div class="formItem">
+                    <label for="sysID">sysID</label>
+                    <input type="" name="sysID" value="">
+                </div>
+            </fieldset >
+            <fieldset >
+                <legend>3PL Central Small Pack Options:</legend>
+                <div class="formItem">
+                    <label for="keyedInputDisabled">Disable Keys Input</label>
+                    <input type="checkbox" name="keyedInputDisabled" checked>
+                </div>
+                
+                <div class="formItem">
+                    <label for="keyedInputProccessTime">Porccess for keyed Input</label>
+                    <input type="text" name="keyedInputProccessTime" checked>
+                </div>
+                
+                <div class="formItem">
+                    <label for="keyedInputTimeLimit">Time Limit for keyed Input</label>
+                    <input type="text" name="keyedInputTimeLimit" checked>
+                </div>
+            </fieldset>
+
+            
+            <fieldset >
+                <legend>techShip Options:</legend>
+                <div class="formItem">
+                    <label for="techShipEnabled">Enable TechShip</label>
+                    <input type="checkbox" name="techShipEnabled">
+                </div>
+
+                <div class="formItem">
+                    <label for="techShipTimeMin">Minimum Time</label>
+                    <input type="" name="techShipTimeMin" value="">
+                </div>
+
+                <div class="formItem">
+                    <label for="techShipAutoload">TechShip Autoload</label>
+                    <input type="checkbox" name="techShipAutoload" >
+                </div>
+                
+                <div class="formItem">
+                    <label for="techShipAutoClose">Auto Close after Autoload</label>
+                    <input type="checkbox" name="techShipAutoClose">
+                </div>
+
+                <div class="formItem">
+                    <label for="techShipTimeout">Auto Close after</label>
+                    <input type="" name="techShipTimeout" value="">
+                </div>
+
+            </fieldset>
+
+
+            <div id="messageBox"></div>
+            <button id="settingsSaveBtn">Save</button>
+            
+
+        </form>
+    </div>
+
+
+    <div>
+        <h2>Dev Links</h2>
+        <a href="/events.html" target="_blank" >Event Simulation</a><br>
+        <a href="/techShip.html?order=123456" target="_blank" >TechShip Demo</a>
+
+    </div>
+
+
+
+    <style>
+        body{
+            width: 400px;
+        }
+        fieldset{
+            margin: 1em;
+        }
+        legend {
+            font-size: 1.2em;
+            font-weight: bold;
+            padding: 0 0.5em;
+        }
+        #settingsFormContainer{
+            /* width: 400px; */
+        }
+        .formItem{
+            margin-bottom: 15px;
+        }
+        .formItemTitle{
+            font-weight: bold;
+            font-size: medium;
+        }
+        #messageBox{
+            min-height: 3em;
+        }
+    </style>
+
+    
+    <script src="settings.js"></script>
+
+</body>

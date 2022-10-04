@@ -24,10 +24,10 @@
     }
   ],
   "options_ui": {
-    "page": "options.html"
+    "page": "settings.html"
   },
   "action": {
-    "default_popup": "options.html",
+    "default_popup": "settings.html",
     "techShip": "techShip.html"
   },
   "permissions": [

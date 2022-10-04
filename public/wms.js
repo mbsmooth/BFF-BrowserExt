@@ -289,56 +289,69 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
                 func: "$3pl.pageMods.setup.smallParcelPackAndShip()"
             })
 
-            // ** Draw an onscreen barcode for scanning. **
-            setTimeout(()=>{ // add container to hold the barcode
 
-                //find the container that will hold the barcode SVG element
-                var hAry = document.getElementsByClassName("footer-btn-holder")
-                // hAry may return more than one element.... get the last element
-                let divDOM = hAry[hAry.length-1]
+            if($3pl.config.techShipEnabled){
+                // ** Draw an onscreen barcode for scanning. **
+                setTimeout(()=>{ // add container to hold the barcode
 
-                //build the svg element
-                            // Note as to why it is this way
-                            // https://github.com/lindell/JsBarcode/issues/221
-                            // https://jsfiddle.net/hb9nr62q/1/
-                let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                svg.setAttribute('jsbarcode-format', 'code39')
-                svg.setAttribute('jsbarcode-value', transNum)
-                svg.className.baseVal = "transBarcode";
-                divDOM.prepend(svg);
+                    // //find the container that will hold the barcode SVG element
+                    // var hAry = document.getElementsByClassName("footer-btn-holder")
+                    // // hAry may return more than one element.... get the last element
+                    // let divDOM = hAry[hAry.length-1]
 
-                JsBarcode(".barcode").init();
-
-                
+                    // //build the svg element
+                    //             // Note as to why it is this way
+                    //             // https://github.com/lindell/JsBarcode/issues/221
+                    //             // https://jsfiddle.net/hb9nr62q/1/
+                    // let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                    // svg.setAttribute('jsbarcode-format', 'code39')
+                    // svg.setAttribute('jsbarcode-value', transNum)
+                    // svg.className.baseVal = "transBarcode";
+                    // divDOM.prepend(svg);
 
 
-                // build the barcode and place into the svg element.
-                JsBarcode("svg.transBarcode", transNum,{
-                    // fontSize: 40,
-                    // background: "#4b8b7f",
-                    // lineColor: "#ffffff",
-                    // margin: 40,
-                    // marginLeft: 80,
-                    format: "code39",
-                    displayValue: true,
-                    height: 50,
-                    // width: 6
-                })
+                    // JsBarcode(".barcode").init();
 
-                // Pack button listener
-                let packBtn = document.getElementById("packAndShipTransactionPack")
-                packBtn.addEventListener("click",(e)=>{
-                    let t = e.target
-                    if(t.disabled){
-                        console.log('Pack Button is disabled')
-                    } else {
-                        console.log('Pack Button is enabled')
-                        // tell the backgorund script to display techSHip window
-                        chrome.runtime.sendMessage({type:'techShip',payload:{orderNum:transNum}})
-                        
-                    }
-                })
-            },500)
+                    // // build the barcode and place into the svg element.
+                    // JsBarcode("svg.transBarcode", transNum,{
+                    //     // fontSize: 40,
+                    //     // background: "#4b8b7f",
+                    //     // lineColor: "#ffffff",
+                    //     // margin: 40,
+                    //     // marginLeft: 80,
+                    //     format: "code39",
+                    //     displayValue: true,
+                    //     height: 50,
+                    //     // width: 6
+                    // })
+
+                    // Pack button listener
+                    let packBtn = document.getElementById("packAndShipTransactionPack")
+                    packBtn.addEventListener("click",(e)=>{
+                        let t = e.target
+                        if(t.disabled){
+                            console.log('Pack Button is disabled')
+                        } else {
+                            console.log('Pack Button is enabled')
+                            // tell the backgorund script to display techSHip window
+                            chrome.runtime.sendMessage({type:'techShip',payload:{orderNum:transNum}})
+                            
+                        }
+                    })
+
+                    shipBtn = document.querySelector('[data-wms-selector="packAndShipTransactionFinish"]');
+                    pkAndShipBtn = document.querySelector('[data-wms-selector="packAndShipTransactionPackAndShip"]');
+                    
+                    shipBtn.disabled= true
+                    pkAndShipBtn.disabled= true
+                    shipBtn.classList.add('wms_disabled_look')
+                    pkAndShipBtn.classList.add('wms_disabled_look')
+                    shipBtn.hidden = true
+                    pkAndShipBtn.hidden = true
+
+
+                },500)
+            }
 
         }
     })
