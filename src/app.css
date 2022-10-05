@@ -70,3 +70,15 @@ code {
     border: .5px dashed #fff;
     opacity: .2;
 }
+
+button {
+    padding: 1em 2em;
+}
+
+
+
+@media print {
+    .noprint {
+        visibility: hidden;
+    }
+}

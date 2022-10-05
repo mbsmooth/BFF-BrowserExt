@@ -14,12 +14,16 @@ async function start(){
     
     // Enable the close button after  techShipTimeMin in ms
     setTimeout(()=>{
-        document.getElementById('closeTab').disabled = false
+        document.getElementById('closeTabBtn').disabled = false
     },$bf.config.techShipTimeMin)
 
     // close tab when clicked
-    document.getElementById('closeTab').addEventListener('click',(e)=>{
+    document.getElementById('closeTabBtn').addEventListener('click',(e)=>{
         window.close();
+    })
+    // close tab when clicked
+    document.getElementById('printBtn').addEventListener('click',(e)=>{
+        window.print();return false;
     })
     
 }
