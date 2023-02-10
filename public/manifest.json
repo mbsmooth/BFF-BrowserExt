@@ -15,11 +15,17 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://global.secure-wms.com/*"],
+      "matches": [
+        "*://*.secure-wms.com/*",
+        "://app.extensiv.com/*"
+        ],
       "js": ["wms.js"]
     },
     {
-      "matches": ["*://global.secure-wms.com/*"],
+      "matches": [
+        "*://*.secure-wms.com/*",
+        "://app.extensiv.com/*"
+        ],
       "js": ["JsBarcode.js"]
     }
   ],
