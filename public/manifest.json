@@ -17,14 +17,14 @@
     {
       "matches": [
         "*://*.secure-wms.com/*",
-        "://app.extensiv.com/*"
+        "*://app.extensiv.com/*"
         ],
       "js": ["wms.js"]
     },
     {
       "matches": [
         "*://*.secure-wms.com/*",
-        "://app.extensiv.com/*"
+        "*://app.extensiv.com/*"
         ],
       "js": ["JsBarcode.js"]
     }
