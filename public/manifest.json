@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "3pl Mods",
-  "version": "0.1.30",
+  "version": "0.1.31",
   "update_url": "https://wms.bful.co/ext/update.xml",
   "description": "The BFF Chrome Extension",
   "icons": {
@@ -16,19 +16,19 @@
   "content_scripts": [
     {
       "matches": [
-        "*://*.secure-wms.com/*",
-        "*://app.extensiv.com/*",
-        "*://3w.secure-wms.com/*"
+        "*://*.secure-wms.com/*"
         ],
-      "js": ["wms.js"]
+      "js": ["wms.js"],
+      "all_frames": true
     },
     {
       "matches": [
-        "*://*.secure-wms.com/*",
+        "*://*.secure-wms.com/*", 
         "*://app.extensiv.com/*",
         "*://3w.secure-wms.com/*"
         ],
-      "js": ["JsBarcode.js"]
+      "js": ["JsBarcode.js"],
+      "all_frames": true
     }
   ],
   "options_ui": {

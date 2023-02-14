@@ -102,8 +102,6 @@ var $3pl = {
         } else {
             console.log("3PL Mods: Event log upload is Disabled in Ext Settings.")
         }
-
-
     }
 }
 
@@ -119,6 +117,8 @@ var $3pl = {
 $3pl.setup = async function (){
 
     console.log("3PL MODS IS LOADING")
+
+
 
 
     // get the current saved config and save to running config
@@ -180,6 +180,9 @@ $3pl.setup()
 
 // watch for changes in page or tab within the 3PL Central Application
 setInterval(()=>{
+
+    Z = document.querySelectorAll("iframe#spaWrapperIframe")
+
     $3pl.oldSearch ??= '';
     if(window.location.search == $3pl.oldSearch) {
         return false;
