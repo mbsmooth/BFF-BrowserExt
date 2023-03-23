@@ -128,11 +128,11 @@ async function saveSettings(){
         logServer:              document.getElementsByName("logServer")[0].value,
         sysID:                  document.getElementsByName("sysID")[0].value,
     // 3PLC Small Pack
-        keyedInputDisabled:     document.getElementsByName("keyedInputDisabled")[1].checked,
+        keyedInputDisabled:     document.getElementsByName("keyedInputDisabled")[0].checked,
         keyedInputProccessTime: document.getElementsByName("keyedInputProccessTime")[0].value,
         keyedInputTimeLimit:    document.getElementsByName("keyedInputTimeLimit")[0].value,
     // TechShip
-        techShipEnabled:        document.getElementsByName("techShipEnabled")[1].checked,
+        techShipEnabled:        document.getElementsByName("techShipEnabled")[0].checked,
         techShipTimeMin:        document.getElementsByName("techShipTimeMin")[0].value,
         techShipAutoload:       document.getElementsByName("techShipAutoload")[0].checked,
         techShipAutoClose:      document.getElementsByName("techShipAutoClose")[0].checked,
