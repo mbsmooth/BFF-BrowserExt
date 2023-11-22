@@ -155,17 +155,16 @@ $3pl.setup = async function (){
     // save all current setting
     await chrome.storage.local.set($3pl.config)
 
-        // Post a log entry that the extention was loaded
-        $3pl.log({ 
-            code: 39001,
-            level: 2,
-            transaction: null, 
-            message: "Loaded the Extention",
-            data: {
-            }, 
-            func: null
-        })
-    
+    // Post a log entry that the extention was loaded
+    $3pl.log({ 
+        code: 39001,
+        level: 2,
+        transaction: null, 
+        message: "Loaded the Extention",
+        data: {
+        }, 
+        func: null
+    })
 
     return true
 }
@@ -277,6 +276,9 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
         } else {
             console.log(`${transNum} opened.`)
 
+            // TODO: kickoff Rabot Start Pack
+            // TODO: kickoff Penny Black Postcard
+
             $3pl.log({ 
                 code: 31001,
                 level: 2,
@@ -349,6 +351,47 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
                     shipBtn.hidden = true
                     pkAndShipBtn.hidden = true
 
+                    // TODO: Add a Triage button
+                    const TriageText = document.createTextNode("Triage");
+                    
+                    let TriageBtnText = document.createElement("div")
+                        TriageBtnText.classList.add('wms_toolbar_button_text')
+                        TriageBtnText.appendChild(TriageText)
+                    let TriageBtnSprite = document.createElement("div")
+                        TriageBtnSprite.classList.add('wms_sprite','fa','fa-stethoscope')
+                    let TriageBtn = document.createElement("button")
+                        TriageBtn.setAttribute('id', 'printTriageBtn')
+                        TriageBtn.setAttribute('data-wms-selector', 'printTriageBtn')
+                        TriageBtn.classList.add('wms_toolbar_button','primary_button_color')
+                        TriageBtn.appendChild(TriageBtnSprite)
+                        TriageBtn.appendChild(TriageBtnText)
+                    
+
+                    
+                    let TriageBtn_button_holder = document.createElement("div")
+                        TriageBtn_button_holder.classList.add('button_holder')
+                        TriageBtn_button_holder.appendChild(TriageBtn)
+                    let TriageBtnComponent = document.createElement("div")
+                        TriageBtnComponent.classList.add('wms-button-component')
+                        TriageBtnComponent.appendChild(TriageBtn_button_holder)
+                    
+
+                    let footerBtnHolder = document.querySelector('#PackAndShipTransactionModel .footer-btn-holder')
+                    let clsBtn = footerBtnHolder.childNodes[0]
+                    // document.insertBefore(TriageBtnComponent,footerBtnHolder.childNodes[0])
+                    clsBtn.parentElement.insertBefore(TriageBtnComponent,clsBtn)
+
+
+                    TriageBtnComponent.addEventListener("click",(e)=>{
+                        let t = e.target
+                        
+                            console.log('Triage Button is clicked')
+                            // tell the backgorund script to display techSHip window
+                            chrome.runtime.sendMessage({type:'triage',payload:{orderNum:transNum}})
+                        
+                    })
+
+
 
                 },500)
             }
@@ -408,7 +451,7 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
         .catch(()=>{
             console.error("transNum not found after blur")
             $3pl.log({ 
-                code: 00000,
+                code: '00000',
                 level: 5,
                 customerName: null,
                 transaction: null, 

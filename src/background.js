@@ -80,6 +80,12 @@ chrome.runtime.onMessage.addListener(async (message,sender,cb) => {
 var msgHandlers = {}
     msgHandlers.template =  async (payload,sender,cb)=>{}
 
+    msgHandlers.triage = async (payload,sender,cb)=>{
+      console.log(`triage: ${payload.orderNum}`);  
+      chrome.tabs.create({ 'url': `chrome-extension://${chrome.runtime.id}/techShip.html?order=${payload.orderNum}&triage=true` });  
+    }
+
+
     msgHandlers.techShip = async (payload,sender,cb)=>{
       // only if techShip is enabled
       if($bf.config.techShipEnabled){
