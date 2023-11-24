@@ -411,7 +411,39 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
     })
 
 
-    var scanBox = document.getElementById('packAndShipTransactionscanGridKey')
+    
+// build new scanbox input field... hid the original scanbox input
+    let scanBoxOG = document.getElementById('packAndShipTransactionscanGridKey')
+    let scanBox = scanBoxOG.cloneNode(true)
+        scanBox.setAttribute('id', 'packAndShipScanBox')
+        scanBox.setAttribute('name', 'packAndShipScanBox')
+    scanBoxOG.parentElement.insertBefore(scanBox,scanBoxOG)
+    // scanBoxOG.hidden=true
+
+
+    scanBox.addEventListener("keydown", (e)=>{
+
+        // if the Enter key is pressed, copy the value from the scanBox
+
+        if(e.key=== 'Enter'){
+            console.log('input submited: ' + e.target.value)
+            console.log(e)
+            // TODO check is there is an alias for the UPC
+            scanBoxOG.value = e.target.value
+
+            // trigger the enter key within the scanBoxOG field
+
+            // let entKeyEct = new KeyboardEvent('keydown', {key:"Enter",keyCode: 13})
+            // scanBoxOG.dispatchEvent(entKeyEct)
+
+
+            // el.dispatchEvent(new KeyboardEvent('keydown', {key:"Enter",keyCode: 13}))
+
+            let addBtn = document.querySelector("[data-wms-selector='packAndShipTransactionScanKeyAddButton']")
+            addBtn.click()
+        }
+    })
+
 
     /*
     *   Capture & Log typed value into the ScanBox
@@ -466,9 +498,12 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
     *   Barcode Scan Required
     *   prevent manual input into the "Pack a Line Item" input filed
     */
-    var scanBox = document.getElementById('packAndShipTransactionscanGridKey')
-   if($3pl.config.keyedInputDisabled){ // check in setting if keyed entry is allowed
-        scanBox.oninput = (e)=>{ // Listener for input changes
+
+    scanBox.oninput = (e)=>{ // Listener for input changes
+
+
+        if($3pl.config.keyedInputDisabled){ // check in setting if keyed entry is allowed
+
             $3pl.pageMods.settings.smallParcelSettings.scanBoxTimeout = setTimeout(()=>{ // build a timmer to clear the input box
                 //TODO: Log the data back to the server
                 var v = e.target.value
@@ -484,6 +519,8 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
                     },$3pl.config.keyedInputProccessTime) // Time until it is cleared and reset
             }, $3pl.config.keyedInputTimeLimit) //Time limit for input
         }
+
+        scanBoxOG.value = scanBox.value || ""
     }
 
     /*
