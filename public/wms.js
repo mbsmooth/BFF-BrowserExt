@@ -421,6 +421,14 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
     // scanBoxOG.hidden=true
 
 
+    const inputEvent = new Event('input', {
+        bubbles: true,
+        cancelable: true,
+      });
+
+      scanBoxOG.style.display = "none";
+
+
     scanBox.addEventListener("keydown", (e)=>{
 
         // if the Enter key is pressed, copy the value from the scanBox
@@ -521,6 +529,10 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
         }
 
         scanBoxOG.value = scanBox.value || ""
+       
+        scanBoxOG.setAttribute('value', scanBoxOG.value);
+
+        scanBoxOG.dispatchEvent(inputEvent);
     }
 
     /*
