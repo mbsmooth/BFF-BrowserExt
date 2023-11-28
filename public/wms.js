@@ -256,9 +256,9 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
     document.getElementById("selectUnpack").checked=false;
     document.getElementById("selectUnpack").disabled=true;
 
-    // disable the "Qty 1 Pack checkbox"
-    document.getElementById("oneQtyPack").checked=true;
-    document.getElementById("oneQtyPack").disabled=true;
+    // // disable the "Qty 1 Pack checkbox"
+    // document.getElementById("oneQtyPack").checked=true;
+    // document.getElementById("oneQtyPack").disabled=true;
 
     // track the status of the "Pack and Ship" Modal
     $3pl.pageMods.settings.smallParcelPackAndShip.active = true;
