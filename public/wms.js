@@ -252,8 +252,13 @@ $3pl.pageMods.setup.smallParcel = ()=>{
     
 }
 $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
-    //disable the "Select all unpacked items" check box
+    //  disable the "Select all unpacked items" check box
+    document.getElementById("selectUnpack").checked=false;
     document.getElementById("selectUnpack").disabled=true;
+
+    // disable the "Qty 1 Pack checkbox"
+    document.getElementById("oneQtyPack").checked=true;
+    document.getElementById("oneQtyPack").disabled=true;
 
     // track the status of the "Pack and Ship" Modal
     $3pl.pageMods.settings.smallParcelPackAndShip.active = true;
@@ -351,50 +356,52 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
                     shipBtn.hidden = true
                     pkAndShipBtn.hidden = true
 
-                    // TODO: Add a Triage button
-                    const TriageText = document.createTextNode("Triage");
                     
-                    let TriageBtnText = document.createElement("div")
-                        TriageBtnText.classList.add('wms_toolbar_button_text')
-                        TriageBtnText.appendChild(TriageText)
-                    let TriageBtnSprite = document.createElement("div")
-                        TriageBtnSprite.classList.add('wms_sprite','fa','fa-stethoscope')
-                    let TriageBtn = document.createElement("button")
-                        TriageBtn.setAttribute('id', 'printTriageBtn')
-                        TriageBtn.setAttribute('data-wms-selector', 'printTriageBtn')
-                        TriageBtn.classList.add('wms_toolbar_button','primary_button_color')
-                        TriageBtn.appendChild(TriageBtnSprite)
-                        TriageBtn.appendChild(TriageBtnText)
-                    
-
-                    
-                    let TriageBtn_button_holder = document.createElement("div")
-                        TriageBtn_button_holder.classList.add('button_holder')
-                        TriageBtn_button_holder.appendChild(TriageBtn)
-                    let TriageBtnComponent = document.createElement("div")
-                        TriageBtnComponent.classList.add('wms-button-component')
-                        TriageBtnComponent.appendChild(TriageBtn_button_holder)
-                    
-
-                    let footerBtnHolder = document.querySelector('#PackAndShipTransactionModel .footer-btn-holder')
-                    let clsBtn = footerBtnHolder.childNodes[0]
-                    // document.insertBefore(TriageBtnComponent,footerBtnHolder.childNodes[0])
-                    clsBtn.parentElement.insertBefore(TriageBtnComponent,clsBtn)
-
-
-                    TriageBtnComponent.addEventListener("click",(e)=>{
-                        let t = e.target
-                        
-                            console.log('Triage Button is clicked')
-                            // tell the backgorund script to display techSHip window
-                            chrome.runtime.sendMessage({type:'triage',payload:{orderNum:transNum}})
-                        
-                    })
 
 
 
                 },500)
             }
+
+            // Add a Triage button
+            const TriageText = document.createTextNode("Triage");
+                    
+            let TriageBtnText = document.createElement("div")
+                TriageBtnText.classList.add('wms_toolbar_button_text')
+                TriageBtnText.appendChild(TriageText)
+            let TriageBtnSprite = document.createElement("div")
+                TriageBtnSprite.classList.add('wms_sprite','fa','fa-stethoscope')
+            let TriageBtn = document.createElement("button")
+                TriageBtn.setAttribute('id', 'printTriageBtn')
+                TriageBtn.setAttribute('data-wms-selector', 'printTriageBtn')
+                TriageBtn.classList.add('wms_toolbar_button','primary_button_color')
+                TriageBtn.appendChild(TriageBtnSprite)
+                TriageBtn.appendChild(TriageBtnText)
+            
+
+            
+            let TriageBtn_button_holder = document.createElement("div")
+                TriageBtn_button_holder.classList.add('button_holder')
+                TriageBtn_button_holder.appendChild(TriageBtn)
+            let TriageBtnComponent = document.createElement("div")
+                TriageBtnComponent.classList.add('wms-button-component')
+                TriageBtnComponent.appendChild(TriageBtn_button_holder)
+            
+
+            let footerBtnHolder = document.querySelector('#PackAndShipTransactionModel .footer-btn-holder')
+            let clsBtn = footerBtnHolder.childNodes[0]
+            // document.insertBefore(TriageBtnComponent,footerBtnHolder.childNodes[0])
+            clsBtn.parentElement.insertBefore(TriageBtnComponent,clsBtn)
+
+
+            TriageBtnComponent.addEventListener("click",(e)=>{
+                let t = e.target
+                
+                    console.log('Triage Button is clicked')
+                    // tell the backgorund script to display techSHip window
+                    chrome.runtime.sendMessage({type:'triage',payload:{orderNum:transNum}})
+                
+            })
 
         }
     })
