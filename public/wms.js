@@ -444,6 +444,7 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
             // let entKeyEct = new KeyboardEvent('keydown', {key:"Enter",keyCode: 13})
             // scanBoxOG.dispatchEvent(entKeyEct)
 
+            checkAndReplaceAliaswrapper()
 
             // el.dispatchEvent(new KeyboardEvent('keydown', {key:"Enter",keyCode: 13}))
 
@@ -527,6 +528,10 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
                     },$3pl.config.keyedInputProccessTime) // Time until it is cleared and reset
             }, $3pl.config.keyedInputTimeLimit) //Time limit for input
         }
+
+
+        checkAndReplaceAliaswrapper()
+        
 
         scanBoxOG.value = scanBox.value || ""
        
@@ -702,3 +707,125 @@ Object.defineProperty(window,'user',{
         return window?.localStorage?.currentLoginUser;
     }
 })
+
+
+function checkAndReplaceAliaswrapper() {
+
+    let scanBoxOG = document.getElementById('packAndShipTransactionscanGridKey')
+
+    let scanBox = document.getElementById('packAndShipScanBox')
+
+    const inputEvent = new Event('input', {
+        bubbles: true,
+        cancelable: true,
+      });
+
+
+   let aliassku= checkAndReplaceAlias(scanBox.value)
+
+if(aliassku){
+   scanBox.value = aliassku
+
+   scanBoxOG.value = aliassku
+       
+   scanBoxOG.setAttribute('value', aliassku);
+
+   scanBoxOG.dispatchEvent(inputEvent);
+}
+ 
+}
+
+    //Function to make the API call and check if the alias exists
+     function checkAndReplaceAlias(scanValue) {
+     
+        let cacheVal = retrieveJsonFromCache(scanValue);
+
+        if (cacheVal) {          
+            
+            console.log('Alias retrieved from cache')
+           return cacheVal.sku || cacheVal[0].sku;            
+           
+        }
+
+      // Check if the userEntry is not empty
+      if (scanValue !== "") {
+        try {
+          // Make an API call to check if the alias exists
+          //https://api.bful.co/products/upcAlias?barcode=987654987
+            const response =  fetch(`https://api.bful.co/products/upcAlias?barcode=${scanValue}`)
+            .then(response => response.json())
+              .then(data => {                             
+
+                  saveJsonToCache(data,scanValue);
+                
+                if (data[0]) {                
+                  console.log('Alias retrieved from API')
+                    return data[0].sku;                    
+                } else {                  
+                  return null
+                }
+              })
+              .catch(error => {
+                  console.error('Error fetching data:', error);
+                  return null;
+              });
+       
+        } catch (error) {
+          console.error('Error fetching data:', error);
+       
+        }
+      } else {
+        //alert('Please enter a value before checking the alias.');
+      }
+      }
+
+
+      const cacheKey = 'jsonCache';
+
+      function saveJsonToCache(jsonData, barcode) {
+          
+          const cachedData = localStorage.getItem(cacheKey) || '[]';
+          const existingData = JSON.parse(cachedData);
+                  
+
+          let isAlreadyCached = null;
+          for (let i = 0; i < existingData.length; i++) {
+              const innerArray = existingData[i];
+              const record = innerArray.find(entry => entry.barcode === barcode);
+              if (record) {
+                isAlreadyCached = record;
+                  break; 
+              }
+          }
+
+          
+
+          if (!isAlreadyCached) {
+              // If not, add the new JSON data to the cache
+              existingData.push(jsonData);
+              localStorage.setItem(cacheKey, JSON.stringify(existingData));
+          }
+      }
+
+      function retrieveJsonFromCache(barcode) {          
+      
+          const cachedData = localStorage.getItem(cacheKey) || '[]';
+          const existingData = JSON.parse(cachedData);
+
+         
+          let foundRecord = null;
+          for (let i = 0; i < existingData.length; i++) {
+              const innerArray = existingData[i];
+              const record = innerArray.find(entry => entry.barcode === barcode);
+              if (record) {
+                  foundRecord = record;
+                  break; 
+              }
+          }
+
+          return foundRecord;
+          
+      }
+
+      
+
