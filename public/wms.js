@@ -839,7 +839,7 @@ function retrieveJsonFromCache(barcode) {
     
     let foundRecord = null;
     for (let i = 0; i < existingData.length; i++) {
-        if(existingData[i].barcode = barcode){
+        if(existingData[i].barcode == barcode){
             foundRecord = existingData[i].sku
         }
     }
