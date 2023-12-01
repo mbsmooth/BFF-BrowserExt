@@ -256,6 +256,10 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
     document.getElementById("selectUnpack").checked=false;
     document.getElementById("selectUnpack").disabled=true;
 
+    // update the list of UPC Alias from the API
+    fetchUpcAliasList(true)
+    setInterval(fetchUpcAliasList,600*1000) // update every 10 min
+
     // // disable the "Qty 1 Pack checkbox"
     // document.getElementById("oneQtyPack").checked=true;
     // document.getElementById("oneQtyPack").disabled=true;
@@ -730,109 +734,120 @@ function checkAndReplaceAliaswrapper() {
 
    let aliassku= checkAndReplaceAlias(scanBox.value)
 
-if(aliassku){
-   scanBox.value = aliassku
+    if(aliassku){
+    scanBox.value = aliassku
 
-   scanBoxOG.value = aliassku
-       
-   scanBoxOG.setAttribute('value', aliassku);
+    scanBoxOG.value = aliassku
+        
+    scanBoxOG.setAttribute('value', aliassku);
 
-   scanBoxOG.dispatchEvent(inputEvent);
+    scanBoxOG.dispatchEvent(inputEvent);
+    }
+    
 }
- 
+
+//Function to make the API call and check if the alias exists
+function checkAndReplaceAlias(scanValue) {
+    return retrieveJsonFromCache(scanValue)
+
+    // let cacheVal = retrieveJsonFromCache(scanValue);
+
+    // if (cacheVal) {          
+        
+    //     console.log('Alias retrieved from cache')
+    //     return cacheVal || cacheVal[0].sku;            
+        
+    // }
+
+    // Check if the userEntry is not empty
+    // if (scanValue !== "") {
+    //     fetchUpcAliasList()
+    // } else {
+    // alert('Please enter a value before checking the alias.');
+    // }
 }
 
-    //Function to make the API call and check if the alias exists
-     function checkAndReplaceAlias(scanValue) {
-     
-        let cacheVal = retrieveJsonFromCache(scanValue);
 
-        if (cacheVal) {          
+const cacheKey = 'upcAliasCache';
+let cacheLastUpdate = 'upcAliasCache';
+
+
+function fetchUpcAliasList(forceUpdate=false){
+
+    // if forceUpdate is requested, change the cacheLastUpdate to 24 hours ago 
+    if(forceUpdate) cacheLastUpdate = new Date()-(86400*1000)
+
+    // don't update is updatd in the last 5 minutes
+    if((new Date() - cacheLastUpdate)/1000 < 300) return false
+    // debounce / update to current time.
+    cacheLastUpdate = new Date()
+
+    console.log('fetching updated UPC alias List')
+
+
+    try {
+        // Make an API call to check if the alias exists
+        //  https://api.bful.co/products/upcAlias?barcode=987654987
+        const response =  fetch(`https://api.bful.co/products/upcAlias`)
+        .then(response => response.json())
+            .then(data => {      
+                saveJsonToCache(data)      
+                console.log('fetching updated UPC alias List')       
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                return false;
+            });
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return false
+
+    }
+}
+
+function saveJsonToCache(data) {
+    
+    // get cached List of UPS Alias' Local Storage
+    const cachedData = [];
+    // const cachedData = localStorage.getItem(cacheKey) || '[]';
+    // const existingData = JSON.parse(cachedData);
+
+    for(upcEntry of data){
+        if(upcEntry.barcode && upcEntry.sku){
+            cachedData.push({
+                barcode:    upcEntry.barcode,
+                sku:        upcEntry.sku,
+            })
+        }
+    }
+
+    // save the data
+    localStorage.setItem(cacheKey, JSON.stringify(cachedData));
+
+    console.log(`Saved ${cachedData?.length} UPC Alias'`)
             
-            console.log('Alias retrieved from cache')
-           return cacheVal.sku || cacheVal[0].sku;            
-           
+    return cachedData?.length
+
+}
+
+function retrieveJsonFromCache(barcode) {
+
+    const cachedData = localStorage.getItem(cacheKey) || '[]';
+    const existingData = JSON.parse(cachedData);
+
+    
+    let foundRecord = null;
+    for (let i = 0; i < existingData.length; i++) {
+        if(existingData[i].barcode = barcode){
+            foundRecord = existingData[i].sku
         }
-
-      // Check if the userEntry is not empty
-      if (scanValue !== "") {
-        try {
-          // Make an API call to check if the alias exists
-          //https://api.bful.co/products/upcAlias?barcode=987654987
-            const response =  fetch(`https://api.bful.co/products/upcAlias?barcode=${scanValue}`)
-            .then(response => response.json())
-              .then(data => {                             
-
-                  saveJsonToCache(data,scanValue);
-                
-                if (data[0]) {                
-                  console.log('Alias retrieved from API')
-                    return data[0].sku;                    
-                } else {                  
-                  return null
-                }
-              })
-              .catch(error => {
-                  console.error('Error fetching data:', error);
-                  return null;
-              });
-       
-        } catch (error) {
-          console.error('Error fetching data:', error);
-       
-        }
-      } else {
-        //alert('Please enter a value before checking the alias.');
-      }
-      }
-
-
-      const cacheKey = 'jsonCache';
-
-      function saveJsonToCache(jsonData, barcode) {
-          
-          const cachedData = localStorage.getItem(cacheKey) || '[]';
-          const existingData = JSON.parse(cachedData);
-                  
-
-          let isAlreadyCached = null;
-          for (let i = 0; i < existingData.length; i++) {
-              const innerArray = existingData[i];
-              const record = innerArray.find(entry => entry.barcode === barcode);
-              if (record) {
-                isAlreadyCached = record;
-                  break; 
-              }
-          }
-
-          
-
-          if (!isAlreadyCached) {
-              // If not, add the new JSON data to the cache
-              existingData.push(jsonData);
-              localStorage.setItem(cacheKey, JSON.stringify(existingData));
-          }
-      }
-
-      function retrieveJsonFromCache(barcode) {          
-      
-          const cachedData = localStorage.getItem(cacheKey) || '[]';
-          const existingData = JSON.parse(cachedData);
-
-         
-          let foundRecord = null;
-          for (let i = 0; i < existingData.length; i++) {
-              const innerArray = existingData[i];
-              const record = innerArray.find(entry => entry.barcode === barcode);
-              if (record) {
-                  foundRecord = record;
-                  break; 
-              }
-          }
-
-          return foundRecord;
-          
-      }
+    }
+    if(foundRecord) console.log(`searched for ${barcode}, found ${foundRecord}`)
+    if(!foundRecord) console.log(`${barcode} now found in cache`)
+    return foundRecord;
+    
+}
 
       
 
