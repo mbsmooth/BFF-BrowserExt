@@ -843,10 +843,10 @@ function retrieveJsonFromCache(barcode) {
             foundRecord = existingData[i].sku
         }
     }
+
     if(foundRecord) console.log(`searched for ${barcode}, found ${foundRecord}`)
-    if(!foundRecord) console.log(`${barcode} now found in cache`)
+    // if(!foundRecord) console.log(`${barcode} not found in cache`)
     return foundRecord;
-    
 }
 
       
