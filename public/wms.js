@@ -30,8 +30,6 @@ var $3pl = {
         techShipAutoload: false, 
         techShipAutoClose: false,
         techShipTimeout: 3000,
-        
-
     },
     pageMods: { // container to hold page modification setup scripts, destroy settings and settings
         setup: {},
@@ -114,8 +112,6 @@ var $3pl = {
 $3pl.setup = async function (){
 
     console.log("3PL MODS IS LOADING")
-
-
 
 
     // get the current saved config and save to running config
@@ -461,6 +457,8 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
 
             let addBtn = document.querySelector("[data-wms-selector='packAndShipTransactionScanKeyAddButton']")
             addBtn.click()
+            scanBox.value = ''
+            scanBox.focus()
         }
     })
 
