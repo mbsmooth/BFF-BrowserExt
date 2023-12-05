@@ -457,8 +457,11 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
 
             let addBtn = document.querySelector("[data-wms-selector='packAndShipTransactionScanKeyAddButton']")
             addBtn.click()
-            scanBox.value = ''
-            scanBox.focus()
+            setTimeout(()=>{
+                scanBox.value = ''
+                scanBox.focus()
+            },250)
+            
         }
     })
 
