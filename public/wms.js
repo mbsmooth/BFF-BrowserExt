@@ -100,6 +100,42 @@ var $3pl = {
         } else {
             console.log("3PL Mods: Event log upload is Disabled in Ext Settings.")
         }
+    },
+    pennyBlackPrint: function(merchId,trans){
+        pb_location_id = $3pl?.config?.pb_location_id || "PB_BFF_PACKOUT_07"
+        pb_print_url = $3pl?.config?.pb_print_url || "https://api.pennyblack.io/fulfilment/orders/print"
+        pb_api_key = "pk_iwyexwLFP6Krj9C7T1h4_CFKNJXeRX_S4KjhGBgeHgk"
+
+
+        console.logl(`Printing Penny Black`)
+
+
+        let pbBody = {
+            merchant_id: merchId,
+            order_id: String(trans),
+            location_id: pb_location_id
+        }
+
+
+        fetch(
+            pb_print_url,  // Server URL from Extention Settings
+            { // Default options are marked with *                    
+                method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                mode: 'cors', // no-cors, *cors, same-origin
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'same-origin', // include, *same-origin, omit
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Api-Key': pb_api_key
+                },
+                body: JSON.stringify(pbBody) // body data type must match "Content-Type" header
+            }
+        )
+        .then((response) => response.json())
+        .then((doc)=>{
+            console.log("Print requested");
+            console.log(doc);
+        })
     }
 }
 
@@ -270,6 +306,8 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
         var transNum = parseInt(el)
         var customerName = await querySelectorValAsync("[data-wms-selector='packAndShipTransactionCustomerValue']")
 
+        console.log(`Opened Pack modal for ${customerName}: ${transNum}`)
+
         if(!transNum){
             console.log(`Trans Number not found`)
             $3pl.log({ 
@@ -282,7 +320,19 @@ $3pl.pageMods.setup.smallParcelPackAndShip= async ()=>{
             console.log(`${transNum} opened.`)
 
             // TODO: kickoff Rabot Start Pack
-            // TODO: kickoff Penny Black Postcard
+
+
+
+            // Penny Black Postcard
+                // detect is customer is Healthycell
+                if(customerName == "Healthycell"){
+                    console.log("Penny Black Print triggered")
+                    $3pl.pennyBlackPrint("HEALTHYCELL",transNum)
+                } else {
+                    console.log("No Penny Black Print needed ")
+                }
+
+
 
             $3pl.log({ 
                 code: 31001,
